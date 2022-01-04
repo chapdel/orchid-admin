@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LicenseController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/{license:key}', [LicenseController::class, 'show']);
+Route::post('/{company:code}', [LicenseController::class, 'show']);

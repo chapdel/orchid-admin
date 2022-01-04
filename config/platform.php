@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'domain' => env('DASHBOARD_DOMAIN', null),
+    'domain' => env('DASHBOARD_DOMAIN', 'admin.labsdel.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     |
     */
 
-    'prefix' => env('DASHBOARD_PREFIX', '/admin'),
+    'prefix' => env('DASHBOARD_PREFIX', '/'),
 
     /*
     |--------------------------------------------------------------------------
