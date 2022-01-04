@@ -68,8 +68,8 @@ class User extends Authenticatable
     public function scopeWeekSales()
     {
         $amount = 0;
-        License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('expired_at', null)->whereDate('created_at', '>=', now()->subWeek())->each(function ($license) use (&$amount) {
-            $amount += Str::replace(' FCFA', '', $license->price);
+        License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('created_at', '>=', now()->subWeek())->each(function ($license) use (&$amount) {
+            $amount += (float) Str::replace(' ', '', Str::replace('FCFA', '', $license->price));
         });
 
         return $amount;
@@ -78,8 +78,8 @@ class User extends Authenticatable
     public function scopeTotalSales()
     {
         $amount = 0;
-        License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('expired_at', null)->each(function ($license) use (&$amount) {
-            $amount += Str::replace(' FCFA', '', $license->price);
+        License::whereNotIn('status', ['pending', 'expired', 'canceled'])->each(function ($license) use (&$amount) {
+            $amount += (float) Str::replace(' ', '', Str::replace('FCFA', '', $license->price));
         });
 
         return $amount;

@@ -52,7 +52,7 @@ class ExampleScreen extends Screen
     public function query(): array
     {
 
-        $licenses = License::with(['licenseType'])
+        $licenses = License::with(['licenseType'])->whereNotIn('status', ['pending', 'canceled'])
             ->get();
 
         $license_sales = [];
@@ -70,14 +70,14 @@ class ExampleScreen extends Screen
             }
             $license_charts[] = [
                 'name' => $key,
-                'values' => $values,
-                'labels' => $dates,
+                'values' =>  array_reverse($values),
+                'labels' => array_reverse($dates)
             ];
 
             $license_sales[] = [
                 'name' => $key,
-                'values' => $valuess,
-                'labels' => $dates,
+                'values' => array_reverse($valuess),
+                'labels' => array_reverse($dates),
             ];
         }
         return [
@@ -85,7 +85,7 @@ class ExampleScreen extends Screen
             'sales'  => $license_sales,
             'metrics' => [
                 ['keyValue' => number_format(User::weekSales(), 0), 'keyDiff' => 0],
-                ['keyValue' => number_format(License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('expired_at', null)->count(), 0), 'keyDiff' => 0],
+                ['keyValue' => number_format(License::whereNotIn('status', ['pending', 'expired', 'canceled'])->count(), 0), 'keyDiff' => 0],
                 ['keyValue' => number_format(License::whereStatus('pending')->count(), 0), 'keyDiff' => 0],
                 ['keyValue' => number_format(User::totalSales(), 0), 'keyDiff' => 0],
             ],

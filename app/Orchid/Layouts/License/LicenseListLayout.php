@@ -3,6 +3,8 @@
 namespace App\Orchid\Layouts\License;
 
 use App\Models\License;
+use Illuminate\Http\Request;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -29,12 +31,20 @@ class LicenseListLayout extends Table
             TD::make('key', 'Key'),
             TD::make('license_type_id', 'Type')->render(function (License $license) {
                 return $license->licenseType->name;
-            }),
+            })->sort(),
             TD::make('status', 'Status'),
             TD::make('created_at', 'Created'),
             TD::make('updated_at', 'Last edit'),
-            TD::make('status', '')->render(function ($license) {
-                return $license->status ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>';
+            TD::make('status', '')->render(function (License $license) {
+
+                if ($license->status == 'pending') {
+                    return Button::make('Mark as payed!')->confirm(__('Are you sure you want to delete the user?'))
+                        ->icon('dollar')
+                        ->method('buy')->rawClick()
+                        ->novalidate();
+                }
+
+                return $license->status;
             }),
         ];
     }
