@@ -21,7 +21,7 @@ class CreateLicenseTypesTable extends Migration
             $table->boolean('notification')->default(false);
             $table->enum('period', ['annually', 'lifetime'])->default("annually");
             $table->integer('desk')->default(2);
-            $table->text('price')->default("10000 FCFA");
+            $table->string('price')->default("10000 FCFA");
             $table->timestamps();
             $table->softDeletes();
         });
