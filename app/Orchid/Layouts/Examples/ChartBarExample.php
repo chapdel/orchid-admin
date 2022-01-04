@@ -11,7 +11,7 @@ class ChartBarExample extends Chart
     /**
      * @var string
      */
-    protected $title = 'Bar Chart';
+    protected $title = 'Monthly sales';
 
     /**
      * Available options:
@@ -25,5 +25,5 @@ class ChartBarExample extends Chart
     /**
      * @var string
      */
-    protected $target = 'charts';
+    protected $target = 'sales';
 }

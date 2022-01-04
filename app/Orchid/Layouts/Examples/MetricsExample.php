@@ -18,8 +18,8 @@ class MetricsExample extends Metric
      */
     protected $labels = [
         'Sales Week',
-        'Visitors Today',
+        'Active Licenses',
         'Pending Orders',
-        'Total Earnings',
+        'Total Sales',
     ];
 }

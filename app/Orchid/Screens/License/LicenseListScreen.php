@@ -32,7 +32,7 @@ class LicenseListScreen extends Screen
     public function query(): array
     {
         return [
-            'licenses' => \App\Models\License::paginate(),
+            'licenses' => \App\Models\License::with(['licenseType'])->paginate(),
         ];
     }
 

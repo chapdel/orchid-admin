@@ -11,7 +11,7 @@ class ChartLineExample extends Chart
     /**
      * @var string
      */
-    protected $title = 'Line Chart';
+    protected $title = 'License regislation';
 
     /**
      * @var string

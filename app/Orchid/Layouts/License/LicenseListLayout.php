@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Layouts\License;
 
+use App\Models\License;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -26,8 +27,9 @@ class LicenseListLayout extends Table
     {
         return [
             TD::make('key', 'Key'),
-            TD::make('desk', 'Desk'),
-            TD::make('type.name', 'Type'),
+            TD::make('license_type_id', 'Type')->render(function (License $license) {
+                return $license->licenseType->name;
+            }),
             TD::make('status', 'Status'),
             TD::make('created_at', 'Created'),
             TD::make('updated_at', 'Last edit'),

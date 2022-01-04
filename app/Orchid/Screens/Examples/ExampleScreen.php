@@ -2,10 +2,13 @@
 
 namespace App\Orchid\Screens\Examples;
 
+use App\Models\License;
+use App\Models\User;
 use App\Orchid\Layouts\Examples\ChartBarExample;
 use App\Orchid\Layouts\Examples\ChartLineExample;
 use App\Orchid\Layouts\Examples\MetricsExample;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -48,42 +51,43 @@ class ExampleScreen extends Screen
      */
     public function query(): array
     {
-        return [
-            'charts'  => [
-                [
-                    'name'   => 'Some Data',
-                    'values' => [25, 40, 30, 35, 8, 52, 17],
-                    'labels' => ['12am-3am', '3am-6am', '6am-9am', '9am-12pm', '12pm-3pm', '3pm-6pm', '6pm-9pm'],
-                ],
-                [
-                    'name'   => 'Another Set',
-                    'values' => [25, 50, -10, 15, 18, 32, 27],
-                    'labels' => ['12am-3am', '3am-6am', '6am-9am', '9am-12pm', '12pm-3pm', '3pm-6pm', '6pm-9pm'],
-                ],
-                [
-                    'name'   => 'Yet Another',
-                    'values' => [15, 20, -3, -15, 58, 12, -17],
-                    'labels' => ['12am-3am', '3am-6am', '6am-9am', '9am-12pm', '12pm-3pm', '3pm-6pm', '6pm-9pm'],
-                ],
-                [
-                    'name'   => 'And Last',
-                    'values' => [10, 33, -8, -3, 70, 20, -34],
-                    'labels' => ['12am-3am', '3am-6am', '6am-9am', '9am-12pm', '12pm-3pm', '3pm-6pm', '6pm-9pm'],
-                ],
-            ],
-            'table'   => [
-                new Repository(['id' => 100, 'name' => self::TEXT_EXAMPLE, 'price' => 10.24, 'created_at' => '01.01.2020']),
-                new Repository(['id' => 200, 'name' => self::TEXT_EXAMPLE, 'price' => 65.9, 'created_at' => '01.01.2020']),
-                new Repository(['id' => 300, 'name' => self::TEXT_EXAMPLE, 'price' => 754.2, 'created_at' => '01.01.2020']),
-                new Repository(['id' => 400, 'name' => self::TEXT_EXAMPLE, 'price' => 0.1, 'created_at' => '01.01.2020']),
-                new Repository(['id' => 500, 'name' => self::TEXT_EXAMPLE, 'price' => 0.15, 'created_at' => '01.01.2020']),
 
-            ],
+        $licenses = License::with(['licenseType'])
+            ->get();
+
+        $license_sales = [];
+
+        foreach ($licenses->groupBy('licenseType.name') as $key => $value) {
+            $values = [];
+            $valuess = [];
+            $dates = [];
+
+            for ($i = 0; $i < 30; $i++) {
+                $values[] = $value->whereBetween('created_at', [now()->subDays($i)->startOfDay(), now()->subDays($i)->endOfDay()])->count();
+
+                $valuess[] = $value->whereBetween('created_at', [now()->subDays($i)->startOfDay(), now()->subDays($i)->endOfDay()])->sum('price');
+                $dates[] = now()->subDays($i)->format('d M');
+            }
+            $license_charts[] = [
+                'name' => $key,
+                'values' => $values,
+                'labels' => $dates,
+            ];
+
+            $license_sales[] = [
+                'name' => $key,
+                'values' => $valuess,
+                'labels' => $dates,
+            ];
+        }
+        return [
+            'charts'  => $license_charts,
+            'sales'  => $license_sales,
             'metrics' => [
-                ['keyValue' => number_format(6851, 0), 'keyDiff' => 10.08],
-                ['keyValue' => number_format(24668, 0), 'keyDiff' => -30.76],
-                ['keyValue' => number_format(10000, 0), 'keyDiff' => 0],
-                ['keyValue' => number_format(65661, 2), 'keyDiff' => 3.84],
+                ['keyValue' => number_format(User::weekSales(), 0), 'keyDiff' => 0],
+                ['keyValue' => number_format(License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('expired_at', null)->count(), 0), 'keyDiff' => 0],
+                ['keyValue' => number_format(License::whereStatus('pending')->count(), 0), 'keyDiff' => 0],
+                ['keyValue' => number_format(User::totalSales(), 0), 'keyDiff' => 0],
             ],
         ];
     }

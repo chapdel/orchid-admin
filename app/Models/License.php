@@ -19,8 +19,19 @@ class License extends Model
     protected static function booted()
     {
         static::creating(function ($model) {
-            $model->key = auth()->user()->company_id;
+            $model->key = self::key();
         });
+    }
+
+    public function licenseType()
+    {
+        return $this->belongsTo(LicenseType::class);
+    }
+
+    public function getPriceAttribute()
+    {
+
+        return (float) Str::replace(' ', '', Str::replace('FCFA', '', $this->licenseType->price));
     }
 
     public static function key()

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Orchid\Platform\Models\User as Authenticatable;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -63,4 +64,24 @@ class User extends Authenticatable
         'updated_at',
         'created_at',
     ];
+
+    public function scopeWeekSales()
+    {
+        $amount = 0;
+        License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('expired_at', null)->whereDate('created_at', '>=', now()->subWeek())->each(function ($license) use (&$amount) {
+            $amount += Str::replace(' FCFA', '', $license->price);
+        });
+
+        return $amount;
+    }
+
+    public function scopeTotalSales()
+    {
+        $amount = 0;
+        License::whereNotIn('status', ['pending', 'expired', 'canceled'])->whereDate('expired_at', null)->each(function ($license) use (&$amount) {
+            $amount += Str::replace(' FCFA', '', $license->price);
+        });
+
+        return $amount;
+    }
 }
