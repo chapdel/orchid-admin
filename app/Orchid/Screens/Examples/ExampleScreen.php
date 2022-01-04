@@ -56,6 +56,7 @@ class ExampleScreen extends Screen
             ->get();
 
         $license_sales = [];
+         $license_charts = [];
 
         foreach ($licenses->groupBy('licenseType.name') as $key => $value) {
             $values = [];
