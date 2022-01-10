@@ -4,18 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Screen\AsSource;
 
-class Company extends Model
+class CompanyLicense extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     use AsSource;
 
-    protected $connection = 'mysql2';
+    protected $guarded = ['id'];
     protected $hidden = ['id'];
-
-    public function users()
-    {
-        return $this->hasMany(Profile::class, 'company_id');
-    }
 }

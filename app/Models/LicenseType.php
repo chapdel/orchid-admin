@@ -14,4 +14,5 @@ class LicenseType extends Model
     use AsSource;
 
     protected $guarded = ['id'];
+    protected $hidden = ['id'];
 }

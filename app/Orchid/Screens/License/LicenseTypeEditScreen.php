@@ -114,10 +114,10 @@ class LicenseTypeEditScreen extends Screen
                         'digitsOptional' => false,
                     ]),
                 CheckBox::make('licenseType.cloud')
-                    ->value(0)
+                    ->value(false)
                     ->title('Features')->placeholder("Enable Cloud backup"),
                 CheckBox::make('licenseType.notification')
-                    ->value(0)->placeholder("Enable Notifications"),
+                    ->value(false)->placeholder("Enable Notifications"),
                 TextArea::make('licenseType.description')
                     ->title('Description')
                     ->rows(3)
@@ -136,7 +136,16 @@ class LicenseTypeEditScreen extends Screen
      */
     public function createOrUpdate(LicenseType $licenseType, Request $request)
     {
-        $licenseType->fill($request->get('licenseType'))->save();
+        $request->validate([
+            'licenseType.price' => ['required'],
+            'licenseType.name' => ['required'],
+        ]);
+
+        $data = $request->get('licenseType');
+
+        $data['notification'] = $data['notification'] == 'on';
+        $data['cloud'] = $data['cloud'] == 'on';
+        $licenseType->fill($data)->save();
 
         Alert::info('You have successfully created an license type.');
 

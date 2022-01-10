@@ -10,7 +10,7 @@ class LicenseController extends Controller
 {
     public function show(Request $request, License $license)
     {
-        return response()->json($license->load(['licenseType']));
+        return response()->json($license->load(['licenseType', 'company']));
     }
 
     public function assign(Request $request, Company $company)

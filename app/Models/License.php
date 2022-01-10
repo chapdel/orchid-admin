@@ -15,6 +15,8 @@ class License extends Model
     use AsSource;
 
     protected $guarded = ['id'];
+    protected $hidden = ['id'];
+    protected $appends = ['is_active'];
 
     protected static function booted()
     {
@@ -43,5 +45,15 @@ class License extends Model
         }
 
         return $r;
+    }
+
+    public function getIsActiveAttribute()
+    {
+        return !$this->expired_at || $this->expired_at > now();
+    }
+
+    public function company()
+    {
+        return $this->hasOne(CompanyLicense::class);
     }
 }
