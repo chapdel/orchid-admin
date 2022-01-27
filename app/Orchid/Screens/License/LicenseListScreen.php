@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens\License;
 
+use App\Models\CompanyLicense;
 use App\Models\License;
 use App\Models\LicenseType;
 use App\Orchid\Layouts\License\LicenseListLayout;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
@@ -49,7 +51,8 @@ class LicenseListScreen extends Screen
             ModalToggle::make('New license')
                 ->modal('newLicense')
                 ->method('newLicense')
-                ->icon('pencil')
+                ->icon('pencil'),
+
         ];
     }
 
@@ -81,6 +84,15 @@ class LicenseListScreen extends Screen
 
                     return $license->status;
                 }),
+                TD::make('status', '')->render(function (License $license) {
+
+                    return ModalToggle::make('Merge license')
+                        ->modal('mergeLicense')
+                        ->method('mergeLicense')
+                        ->class('bg-primary border-0 rounded-lg')
+                        ->asyncParameters(["from_lis" => $license->id])
+                        ->icon('shuffle');
+                }),
             ]),
             Layout::modal('newLicense', [
                 Layout::rows([
@@ -95,6 +107,15 @@ class LicenseListScreen extends Screen
                         ->title('Status'),
                 ]),
             ])->title('Generate new license')->applyButton('Generate')
+                ->closeButton('Cancel'),
+
+            Layout::modal('mergeLicense', [
+                Layout::rows([
+                    Select::make('newType')
+                        ->fromModel(LicenseType::class, 'name', 'id')
+                        ->title('License type'),
+                ]),
+            ])->title('Merge two license')->applyButton('merge')
                 ->closeButton('Cancel'),
         ];
     }
@@ -114,8 +135,24 @@ class LicenseListScreen extends Screen
         Toast::success('Hello you just generated a new license');
     }
 
+    /**
+     * The action that will take place when
+     * the form of the modal window is submitted
+     */
+    public function mergeLicense(Request $request): void
+    {
+
+        $license = LicenseType::find($request->get('newType'));
+
+        $license1 = License::where('id', $request->get('from_lis'))->update([
+            'license_type_id' => $request->get('newType'),
+        ]);
+        Toast::success('Hello you just merged  license');
+    }
+
     public function buy()
     {
+
         $license = License::find(request()->get('id'))->update(['status' => 'payed']);
 
         Toast::success('Hello you just saled license');

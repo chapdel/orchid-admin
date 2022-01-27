@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\License;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class LicenseController extends Controller
@@ -13,13 +14,20 @@ class LicenseController extends Controller
         return response()->json($license->load(['licenseType', 'company']));
     }
 
-    public function assign(Request $request, Company $company)
+    public function assign(Request $request, $license, Company $company)
     {
-        $request->validate([
-            'key' => ['required', 'exists:licenses,key']
-        ]);
 
+        $license = License::where('key', $license)->first();
 
-        // $company->li
+        if (!$license->company || ($license->company_id == $company->id)) {
+            $license->company()->create(['company_id' => $company->id]);
+            return response()->json([
+                'status' => 200
+            ]);
+        }
+
+        return response()->json([
+            'status' => 412
+        ], 412);
     }
 }
