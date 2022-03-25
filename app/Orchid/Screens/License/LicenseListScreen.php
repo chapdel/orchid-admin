@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens\License;
 
+use App\Models\Company;
 use App\Models\License;
 use App\Models\LicenseType;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class LicenseListScreen extends Screen
     public function query(): array
     {
         return [
-            'licenses' => \App\Models\License::with(['licenseType'])->paginate(),
+            'licenses' => \App\Models\License::with(['licenseType', 'company'])->paginate(),
         ];
     }
 
@@ -65,6 +66,9 @@ class LicenseListScreen extends Screen
                 TD::make('license_type_id', 'Type')->render(function (License $license) {
                     return $license->licenseType->name;
                 })->sort(),
+                TD::make('company_id', 'Company')->render(function ( $company) {
+                    return Company::find( $company->company_id)->first()?->name?:"Un asigned";
+                })->sort(),
                 TD::make('status', 'Status'),
                 TD::make('created_at', 'Created'),
                 TD::make('updated_at', 'Last edit'),
@@ -95,6 +99,9 @@ class LicenseListScreen extends Screen
                     Select::make('licenseType')
                         ->fromModel(LicenseType::class, 'name', 'id')
                         ->title('License type'),
+                    Select::make('company')
+                        ->fromModel(Company::class, 'name', 'id')
+                        ->title('Company'),
                     Select::make('status')
                         ->options([
                             'pending' => "Pending",
@@ -126,6 +133,7 @@ class LicenseListScreen extends Screen
 
         License::create([
             'license_type_id' => $request->get('licenseType'),
+            'company_id' => $request->get('company'),
             'status' => $request->get('status')
         ]);
         Toast::success('Hello you just generated a new license');

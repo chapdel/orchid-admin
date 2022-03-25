@@ -54,6 +54,6 @@ class License extends Model
 
     public function company()
     {
-        return $this->hasOne(CompanyLicense::class);
+        return $this->belongsTo(Company::class);
     }
 }

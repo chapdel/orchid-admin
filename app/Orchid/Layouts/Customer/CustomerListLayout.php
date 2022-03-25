@@ -25,14 +25,15 @@ class CustomerListLayout extends Table
     protected function columns(): array
     {
         return [
+            TD::make('code', 'Account ID'),
             TD::make('name', 'Name')
             /* ->render(function (Post $post) {
                 return Link::make($post->title)
                     ->route('platform.post.edit', $post);
             }) */,
-            TD::make('users_count', 'Users'),
+            TD::make('email', 'Email'),
+            TD::make('phonet', 'Phone'),
             TD::make('created_at', 'Created'),
-            TD::make('updated_at', 'Last edit'),
         ];
     }
 }

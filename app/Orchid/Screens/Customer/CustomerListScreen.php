@@ -4,7 +4,12 @@ namespace App\Orchid\Screens\Customer;
 
 use App\Models\Company;
 use App\Orchid\Layouts\Customer\CustomerListLayout;
+use Illuminate\Http\Request;
+use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class CustomerListScreen extends Screen
 {
@@ -29,7 +34,7 @@ class CustomerListScreen extends Screen
     public function query(): array
     {
         return [
-            'customers' => Company::withCount(['users'])
+            'customers' => Company::with(['license'])
                 ->paginate(),
         ];
     }
@@ -41,7 +46,13 @@ class CustomerListScreen extends Screen
      */
     public function commandBar(): array
     {
-        return [];
+        return [
+            ModalToggle::make('New customer')
+                ->modal('newCustomer')
+                ->method('newCustomer')
+                ->icon('pencil'),
+
+        ];
     }
 
     /**
@@ -52,7 +63,51 @@ class CustomerListScreen extends Screen
     public function layout(): array
     {
         return [
-            CustomerListLayout::class
+            CustomerListLayout::class,
+            Layout::modal('newCustomer', [
+                Layout::rows([
+                    Input::make('name')
+                        ->type('text')
+                        ->max(255)
+                        ->required()
+                        ->title(__('Name'))
+                        ->placeholder(__('Name')),
+                    Input::make('email')
+                        ->type('text')
+                        ->max(255)
+                        ->title(__('Email'))
+                        ->placeholder(__('Email')),
+                    Input::make('phone')
+                        ->type('text')
+                        ->max(255)
+                        ->required()
+                        ->title(__('Phone'))
+                        ->placeholder(__('Phone')),
+                ]),
+            ])->title('New customer')->applyButton('Save')
+                ->closeButton('Cancel'),
         ];
+    }
+
+     /**
+     * The action that will take place when
+     * the form of the modal window is submitted
+     */
+    public function newCustomer(Request $request): void
+    {
+
+        $request->validate([
+            'email' => ['nullable', 'unique:companies'],
+            "phone" => ['required', 'unique:companies'],
+            "name" => ['required'],
+        ]);
+
+        Company::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'phone' => $request->get('phone'),
+        ]);
+
+        Toast::success('Hello you just created a new customer');
     }
 }
