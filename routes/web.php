@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/{license:key}', [LicenseController::class, 'show']);
-Route::post('/{license}/{company:code}', [LicenseController::class, 'assign']);
-Route::get('/{license}/{company:code}', [LicenseController::class, 'assign']);
+/* Route::get('/{license:key}', [LicenseController::class, 'show']);
+Route::post('/{license}/{company:code}', [LicenseController::class, 'assign']); */
+Route::get('/', [LicenseController::class, 'assign']);
 //Route::get('/{license}/{company:code}', [LicenseController::class, 'assign']);
